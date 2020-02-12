@@ -117,7 +117,6 @@ let
   channel = import <nix/unpack-channel.nix> {
     channelName = "nixos";
     inherit (channelInfo) src name;
-    inherit (cfg) binaryCacheURL;
   };
 
   tarball = let
