@@ -1,4 +1,4 @@
-* Offline NixOS Installer
+# Offline NixOS Installer
 Offline NixOS installer is a set of modules which allow one to prepare an ISO
 image (reffered to as Live Image) containing a full closure of target operating
 system (reffered to as Install Image). Once booted, Live Image deploys Install
@@ -13,33 +13,33 @@ deployment and in effect pinpoint potential build failures earlier. Finally,
 ahead-of-time compilation of user-customized Install Image, can be moved to an
 external build service such as Hydra.
 
-* How to build the Installer
+# How to build the Installer
 In order to produce a fully working Live Image, one has to execute `nix-shell` command followed by
 `nix-build` in repository root directory wit following arguments:
+
 | argument        | type | default                   | required | description                                                 |
-|-----------------+------+---------------------------+----------+-------------------------------------------------------------|
-| nixpkgs         | path | ./channels/nixpkgs-stable | false    | A path to directory containing copy of nixpkgs channel      |
+| ----------------| ---- | ------------------------- | -------- | ----------------------------------------------------------- |
 | system          | str  | builtins.currentSystem    | false    | Target system architecture, for example x86_64              |
 | rootDevice      | str  | none                      | true     | Target disk on which Install Image will be deployed         |
-| rootDevicePass  | str  | none                      | true     | Target disk encryption password                             |
 | nixosConfigDir  | path | ./.                       | true     | A path to directory containing target OS configuration      |
 | nixosConfigPath | str  | none                      | true     | Relative path to configuration file within `nixosConfigDir` |
 
 A full example of a build may look like this:
-`
+```
 nix-shell
 nix-build \
- --argstr rootDevice /dev/nvme0n1 \
- --argstr rootDevicePass letmein \
- --arg nixpkgsPath ./channels/nixpkgs-stable \
+ --argstr rootDevice /dev/sda \
  --arg nixosConfigDir ./. \
- --argstr nixosConfigPath profile/user/configuration.nix`
+ --argstr nixosConfigPath profile/user/configuration.nix
+```
 
 Effective Live Image can be found under `result` directory:
-`λ ls result/iso/nixos-18.09pre-git-x86_64-linux.iso 
-result/iso/nixos-18.09pre-git-x86_64-linux.iso`
+```
+λ ls result/iso/nixos-18.09pre-git-x86_64-linux.iso
+result/iso/nixos-18.09pre-git-x86_64-linux.iso
+```
 
-* How to use the Installer
+# How to use the Installer
 Burn the Live Image onto your install media of choice. Following example shows
 how to proceed with an USB drive:
 `λ dd if=result/iso/nixos-18.09pre-git-x86_64-linux.iso of=/dev/sdb`
