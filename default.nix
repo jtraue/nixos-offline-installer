@@ -1,10 +1,10 @@
-{ nixpkgsPath ? ./channels/nixpkgs-stable
+{ niv ? import nix/sources.nix
 , system ? builtins.currentSystem
 , rootDevice
 , rootDevicePass
 , nixosConfigDir ? ./.
 , nixosConfigPath
-, nixpkgs ? builtins.path { path = nixpkgsPath; }
+, nixpkgs ? niv.nixpkgs
 }:
 
 with import nixpkgs { inherit system; };
