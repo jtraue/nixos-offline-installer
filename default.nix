@@ -1,7 +1,6 @@
 { niv ? import nix/sources.nix
 , system ? builtins.currentSystem
 , rootDevice
-, rootDevicePass
 , nixosConfigDir ? ./.
 , nixosConfigPath
 , nixpkgs ? niv.nixpkgs
@@ -15,7 +14,7 @@ let
     # Cook the target os image
     installConfig = {
       installImage = {
-        inherit nixosConfigDir rootDevice rootDevicePass nixosConfigPath;
+        inherit nixosConfigDir rootDevice nixosConfigPath;
         nixpkgs.path = nixpkgs;
       };
     };

@@ -87,12 +87,8 @@ in
 
   environment.systemPackages = with pkgs; [
     coreutils
-    gptfdisk
-    cryptsetup
     iproute
     gawk
-    zfs
-    parted
     dosfstools
     e2fsprogs
     utillinux
@@ -105,6 +101,7 @@ in
     config.systemd.package
     config.system.build.nixos-generate-config
     config.system.build.nixos-enter
+    pythonPackages.nixpart0
   ];
 
     # override installation-cd-base and enable wpa and sshd start at boot

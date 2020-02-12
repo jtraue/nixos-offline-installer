@@ -198,7 +198,6 @@ let
       mkdir $out
       cat >$out/config <<EOF
       rootDevice=${cfg.rootDevice}
-      rootDevicePass=${cfg.rootDevicePass}
       useBinaryCache=${optionalString cfg.installerUseBinaryCache "true"}
       nixosConfigPath=${cfg.nixosConfigPath}
       EOF
@@ -324,13 +323,6 @@ in
           will use the entire disk for the NixOS system.  It creates two partitions,
           one of type VFAT to hold the EFI boot files of size 512MiB, the other of type
           EXT4 to hold the NixOS system.  The disk will be overwritten unconditionally.
-        '';
-      };
-
-      rootDevicePass = mkOption {
-        type = types.str;
-        default = "letmein";
-        description = ''
         '';
       };
 
