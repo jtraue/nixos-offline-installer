@@ -84,6 +84,8 @@ informOk "done"
 ## Make the resolver config available in the chroot
 cp /etc/resolv.conf /mnt
 
+mkdir -p /mnt/tmp
+
 ## Generate hardware-specific configuration
 #nixos-generate-config --root /mnt
 
