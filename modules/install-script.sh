@@ -67,13 +67,58 @@ informOk "Installing NixOS on device $rootDevice"
 
 informOk "Using MBR"
 
-cat >> /tmp/partitions<< EOF
-clearpart --all --initlabel --drives=$rootDevice
-part swap --size=512 --ondisk=$rootDevice
-part / --fstype=ext4 --label=nixroot --grow --ondisk=$rootDevice
-EOF
+## The actual command is below the comment block.
+# we will create a new GPT table
+#
+# o:     create new GPT table
+#     y: confirm creation
+#
+# with the new partition table,
+# we now create the EFI partition
+#
+# n:     create new partion
+#     1: partition number
+#   <empty>: start partition at beginning
+#   <empty>: use all remaining space
+#    8300: set generic linux partition type
+#
+# We only need to set the partition labels
+# c:     change partition label
+#     1: partition to label
+# nixroot: name of the partition
+#
+# w:   write changes and quit
+#     y: confirm write
+#
+-informOk "Setting up partition table"
 
-nixpart /tmp/partitions
+# TODO(m013411): randomize labels
+rm -rf /dev/disk/by-partlabel/nixboot
+rm -rf /dev/disk/by-partlabel/cryptroot
+gdisk ${rootDevice} >/dev/null <<end_of_commands
+o
+y
+n
+1
+
+8300
+c
+1
+nixroot
+w
+y
+end_of_commands
+
+# check for the newly created partitions
+# this sometimes gives unrelated errors
+# so we change it to  `partprobe || true`
+partprobe "${rootDevice}" >/dev/null || true
+
+# wait for label to show up
+while [[ ! -e /dev/disk/by-partlabel/nixroot ]];
+do
+  sleep 2;
+done
 
 informOk "Installing NixOS"
 informOk "Unpacking image $installImg..." -n
