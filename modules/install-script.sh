@@ -67,8 +67,8 @@ informOk "Installing NixOS on device $rootDevice"
 
 informOk "Using MBR"
 
+wipefs -a $rootDevice
 cat >> /tmp/partitions<< EOF
-clearpart --all --initlabel --drives=$rootDevice
 part swap --size=512 --ondisk=$rootDevice
 part / --fstype=ext4 --label=nixroot --grow --ondisk=$rootDevice
 EOF
