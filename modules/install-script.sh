@@ -65,21 +65,34 @@ informOk "...custom configuration done"
 
 informOk "Installing NixOS on device $rootDevice"
 
-informOk "Using MBR"
+informOk "wipe fs"
+dd if=/dev/zero of=$rootDevice bs=1M count=64
+sync
+informOk "fdisk"
+fdisk $rootDevice > /dev/null <<EOF
+o
+n
+p
+1
 
-wipefs -a $rootDevice
-cat >> /tmp/partitions<< EOF
-part swap --size=512 --ondisk=$rootDevice
-part / --fstype=ext4 --label=nixroot --grow --ondisk=$rootDevice
+
+w
+q
 EOF
+sync
 
-nixpart /tmp/partitions
+sleep 1
+fdisk -l
+
+informOk "mkfs"
+mkfs.ext4 ${rootDevice}p1 -L nixroot
 
 informOk "Installing NixOS"
 informOk "Unpacking image $installImg..." -n
 (cd /mnt && tar xapf $installImg)
 chown -R 0:0 /mnt
 informOk "done"
+
 
 ## Make the resolver config available in the chroot
 cp /etc/resolv.conf /mnt
