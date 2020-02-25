@@ -65,15 +65,29 @@ informOk "...custom configuration done"
 
 informOk "Installing NixOS on device $rootDevice"
 
-informOk "Using MBR"
+informOk "Wiping partition table"
+dd if=/dev/zero of=$rootDevice bs=1M count=64
+sync
 
-cat >> /tmp/partitions<< EOF
-clearpart --all --initlabel --drives=$rootDevice
-part swap --size=512 --ondisk=$rootDevice
-part / --fstype=ext4 --label=nixroot --grow --ondisk=$rootDevice
-EOF
+informOk "Partitioning"
+parted $rootDevice -s -- mklabel msdos
+parted $rootDevice -s -- mkpart primary 1MiB -8GiB
+parted $rootDevice -s -- mkpart primary linux-swap -8GiB 100%
+sync
 
-nixpart /tmp/partitions
+informOk "Formatting"
+mkfs.ext4 ${rootDevice}p1 -L nixroot -F
+mkswap ${rootDevice}p2 -L swap
+
+informOk "Mounting"
+mount ${rootDevice}p1 /mnt
+
+# cat >> /tmp/partitions<< EOF
+# clearpart --all --initlabel --drives=$rootDevice
+# part swap --size=512 --ondisk=$rootDevice
+# part / --fstype=ext4 --label=nixroot --grow --ondisk=$rootDevice
+# EOF
+# nixpart /tmp/partitions
 
 informOk "Installing NixOS"
 informOk "Unpacking image $installImg..." -n
